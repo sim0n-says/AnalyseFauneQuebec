@@ -6,7 +6,7 @@ import sys
 from xml.dom import minidom
 
 # Fonction pour gérer les interruptions de l'utilisateur
-def signal_handler(sig, frame):
+def signal_handler(signal, frame):
     print("\nInterruption de l'utilisateur détectée. Enregistrement des données et fermeture du programme.")
     enregistrer_xml()
     sys.exit(0)
@@ -142,11 +142,44 @@ for espece_elem in root.findall('.//ficheBioInfo'):
     if informations_synthétisées.strip():
         # Ajouter les informations synthétisées au nouvel arbre XML
         espece_synth = ET.SubElement(root_synth, "ESPECE")
-        ET.SubElement(espece_synth, "NOM_FRANÇAIS").text = info['Nom_français']
-        ET.SubElement(espece_synth, "GRAND_GROUPE").text = info['Grand_groupe']
-        ET.SubElement(espece_synth, "SOUS_GROUPE").text = info['Sous_groupe']
-        ET.SubElement(espece_synth, "STATUT").text = info['Espèce_à_statut']
-        ET.SubElement(espece_synth, "DESCRIPTION").text = informations_synthétisées
+        for line in informations_synthétisées.split('\n'):
+            if line.startswith('**Nom français**'):
+                ET.SubElement(espece_synth, "NOM_FRANÇAIS").text = line.split(': ')[1]
+            elif line.startswith('**Nom scientifique**'):
+                ET.SubElement(espece_synth, "NOM_SCIENTIFIQUE").text = line.split(': ')[1]
+            elif line.startswith('**Grand groupe**'):
+                ET.SubElement(espece_synth, "GRAND_GROUPE").text = line.split(': ')[1]
+            elif line.startswith('**Sous-groupe**'):
+                ET.SubElement(espece_synth, "SOUS_GROUPE").text = line.split(': ')[1]
+            elif line.startswith('**Espèces similaires**'):
+                ET.SubElement(espece_synth, "ESPÈCES_SIMILAIRES").text = line.split(': ')[1]
+            elif line.startswith('**Distinction**'):
+                ET.SubElement(espece_synth, "DISTINCTION").text = line.split(': ')[1]
+            elif line.startswith('**Description**'):
+                ET.SubElement(espece_synth, "DESCRIPTION").text = line.split(': ')[1]
+            elif line.startswith('**Habitat**'):
+                ET.SubElement(espece_synth, "HABITAT").text = line.split(': ')[1]
+            elif line.startswith('**Répartition**'):
+                ET.SubElement(espece_synth, "RÉPARTITION").text = line.split(': ')[1]
+            elif line.startswith('**Identification**'):
+                ET.SubElement(espece_synth, "IDENTIFICATION").text = line.split(': ')[1]
+            elif line.startswith('**Taille**'):
+                ET.SubElement(espece_synth, "TAILLE").text = line.split(': ')[1]
+            elif line.startswith('**Poids**'):
+                ET.SubElement(espece_synth, "POIDS").text = line.split(': ')[1]
+            elif line.startswith('**Coloration**'):
+                ET.SubElement(espece_synth, "COLORATION").text = line.split(': ')[1]
+            elif line.startswith('**Traits caractéristiques**'):
+                ET.SubElement(espece_synth, "TRAITS_CARACTÉRISTIQUES").text = line.split(': ')[1]
+            elif line.startswith('**Alimentation**'):
+                ET.SubElement(espece_synth, "ALIMENTATION").text = line.split(': ')[1]
+            elif line.startswith('**Reproduction**'):
+                ET.SubElement(espece_synth, "REPRODUCTION").text = line.split(': ')[1]
+            elif line.startswith('**Statut de l\'espèce**'):
+                ET.SubElement(espece_synth, "STATUT").text = line.split(': ')[1]
+            elif line.startswith('**Menaces pour l\'espèce**'):
+                ET.SubElement(espece_synth, "MENACES").text = line.split(': ')[1]
+        ET.SubElement(espece_synth, "DESCRIPTION_SYNTHÉTISÉE").text = informations_synthétisées
         print(f"Informations synthétisées ajoutées pour {info['Nom_français']}.")
         # Enregistrer le fichier XML après chaque ajout d'espèce
         enregistrer_xml()
