@@ -61,7 +61,7 @@ def generer_prompt(info):
 
     **Reproduction** : {info['Reproduction']}
 
-    **Statut de l'espèce** : {info['Statut']}
+    **Statut de l'espèce** : {info['Espèce_à_statut']}
 
     **Menaces pour l'espèce** : {info['Menaces_pour_l_espèce']}
     """
@@ -120,7 +120,7 @@ for espece_elem in root.findall('.//ficheBioInfo'):
         return found.text if found is not None else default
 
     info = {tag: get_text_or_default(espece_elem, tag) for tag in [
-        'Nom_français', 'Nom_scientifique', 'Grand_groupe', 'Sous_groupe', 'Statut',
+        'Nom_français', 'Nom_scientifique', 'Grand_groupe', 'Sous_groupe', 'Espèce_à_statut',
         'Description', 'Identification', 'Taille', 'Poids', 'Coloration', 'Distinction',
         'Répartition', 'Alimentation', 'Reproduction', 'Menaces_pour_l_espèce', 'Traits_caractéristiques',
         'Espèces_similaires', 'Habitat'
@@ -145,7 +145,7 @@ for espece_elem in root.findall('.//ficheBioInfo'):
         ET.SubElement(espece_synth, "NOM_FRANÇAIS").text = info['Nom_français']
         ET.SubElement(espece_synth, "GRAND_GROUPE").text = info['Grand_groupe']
         ET.SubElement(espece_synth, "SOUS_GROUPE").text = info['Sous_groupe']
-        ET.SubElement(espece_synth, "STATUT").text = info['Statut']
+        ET.SubElement(espece_synth, "STATUT").text = info['Espèce_à_statut']
         ET.SubElement(espece_synth, "DESCRIPTION").text = informations_synthétisées
         print(f"Informations synthétisées ajoutées pour {info['Nom_français']}.")
         # Enregistrer le fichier XML après chaque ajout d'espèce
