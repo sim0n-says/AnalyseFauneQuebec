@@ -1,6 +1,11 @@
 # SynthétiseurFauneQuebec
 # Ce script Python est conçu pour lire un fichier XML contenant des informations sur les espèces fauniques,
 # synthétiser ces informations en utilisant une API d'intelligence artificielle, et enregistrer les résultats dans un nouveau fichier XML.
+# Le script utilise la bibliothèque ElementTree pour lire et écrire des fichiers XML, et l'API Hugging Face pour la synthèse de texte.
+# Le script gère également les interruptions de l'utilisateur en enregistrant les données avant de se fermer.
+# Le script est conçu pour être exécuté dans un environnement Python 3.7 ou supérieur.
+# Auteur : Simon Bédard -
+# Date : 2025
 
 # Licence MIT
 #
@@ -50,26 +55,44 @@ client = InferenceClient(provider="together", api_key=api_key)
 # Fonction pour générer le prompt de synthèse
 def generer_prompt(info):
     return f"""
-    Synthétise les informations suivantes sous forme de bullet points très concis pour les rendre factuelles, concises et compréhensibles pour un enfant de 10 ans. 
+    Synthétise les informations suivantes sous forme de texte très concis pour les rendre factuelles, concises et compréhensibles pour un enfant de 10 ans. 
     Veuillez toujours renvoyer les informations dans cet ordre :
-    Nom français : {info['Nom_français']}
-    Nom scientifique : {info['Nom_scientifique']}
-    Grand groupe : {info['Grand_groupe']}
-    Sous-groupe : {info['Sous_groupe']}
-    Espèces similaires : {info['Espèces_similaires']}
-    Distinction : {info['Distinction']}
-    Description : {info['Description']}
-    Habitat : {info['Habitat']}
-    Répartition : {info['Répartition']}
-    Identification : {info['Identification']}
-    Taille : {info['Taille']}
-    Poids : {info['Poids']}
-    Coloration : {info['Coloration']}
-    Traits caractéristiques : {info['Traits_caractéristiques']}
-    Alimentation : {info['Alimentation']}
-    Reproduction : {info['Reproduction']}
-    Statut de l'espèce : {info['Espèce_à_statut']}
-    Menaces pour l'espèce : {info['Menaces_pour_l_espèce']}
+
+    **Nom français** : {info['Nom_français']}
+
+    **Nom scientifique** : {info['Nom_scientifique']}
+
+    **Grand groupe** : {info['Grand_groupe']}
+
+    **Sous-groupe** : {info['Sous_groupe']}
+
+    **Espèces similaires** : {info['Espèces_similaires']}
+
+    **Distinction** : {info['Distinction']}
+
+    **Description** : {info['Description']}
+
+    **Habitat** : {info['Habitat']}
+
+    **Répartition** : {info['Répartition']}
+
+    **Identification** : {info['Identification']}
+
+    **Taille** : {info['Taille']}
+
+    **Poids** : {info['Poids']}
+
+    **Coloration** : {info['Coloration']}
+
+    **Traits caractéristiques** : {info['Traits_caractéristiques']}
+
+    **Alimentation** : {info['Alimentation']}
+
+    **Reproduction** : {info['Reproduction']}
+
+    **Statut de l'espèce** : {info['Espèce_à_statut']}
+
+    **Menaces pour l'espèce** : {info['Menaces_pour_l_espèce']}
     """
 
 # Fonction pour synthétiser les informations pour une espèce
