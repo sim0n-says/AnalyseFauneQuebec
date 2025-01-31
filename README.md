@@ -2,7 +2,7 @@
 
 Ce repository contient deux scripts Python conçus pour analyser et traiter des informations sur la faune du Québec. Le premier script, `ExtracteurFauneQuebec`, extrait des données sur les espèces fauniques menacées ou vulnérables à partir du site web du gouvernement du Québec et les enregistre dans un fichier XML. Le second script, `SynthétiseurFauneQuebec`, lit ce fichier XML, synthétise les informations en utilisant une API d'intelligence artificielle, et enregistre les résultats dans un nouveau fichier XML. Ces outils sont utiles pour les chercheurs, les écologistes, et les décideurs qui ont besoin d'accéder à des informations détaillées et synthétisées sur la faune du Québec.
 
-## Exemple de Résultat Synthétisé
+## Exemple de résultats
 
 Voici un exemple de résultat synthétisé pour une espèce, généré par le script `SynthétiseurFauneQuebec` :
 
