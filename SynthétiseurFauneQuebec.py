@@ -1,38 +1,9 @@
-# SynthétiseurFauneQuebec
-# Ce script Python est conçu pour lire un fichier XML contenant des informations sur les espèces fauniques,
-# synthétiser ces informations en utilisant une API d'intelligence artificielle, et enregistrer les résultats dans un nouveau fichier XML.
-# Le script utilise la bibliothèque ElementTree pour lire et écrire des fichiers XML, et l'API Hugging Face pour la synthèse de texte.
-# Le script gère également les interruptions de l'utilisateur en enregistrant les données avant de se fermer.
-# Le script est conçu pour être exécuté dans un environnement Python 3.7 ou supérieur.
-# Auteur : Simon Bédard -
-# Date : 2025
-
-# Licence MIT
-#
-# Copyright (c) 2025 Simon Bédard - simon@servicesforestiers.tech
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-
 import os
 import xml.etree.ElementTree as ET
 from huggingface_hub import InferenceClient
 import signal
 import sys
+from xml.dom import minidom
 
 # Fonction pour gérer les interruptions de l'utilisateur
 def signal_handler(sig, frame):
@@ -90,7 +61,7 @@ def generer_prompt(info):
 
     **Reproduction** : {info['Reproduction']}
 
-    **Statut de l'espèce** : {info['Espèce_à_statut']}
+    **Statut de l'espèce** : {info['Statut']}
 
     **Menaces pour l'espèce** : {info['Menaces_pour_l_espèce']}
     """
@@ -124,12 +95,19 @@ tree = ET.parse(xml_file)
 root = tree.getroot()
 
 # Créer un nouvel arbre XML pour les informations synthétisées
-root_synth = ET.Element("faune_synthétisée")
+root_synth = ET.Element("FAUNE")
 
-# Fonction pour enregistrer le fichier XML
+# Fonction pour enregistrer le fichier XML avec une meilleure indentation
 def enregistrer_xml():
     tree_synth = ET.ElementTree(root_synth)
     tree_synth.write('faune_synthétisée.xml', encoding="utf-8", xml_declaration=True)
+    # Lire le fichier et réécrire avec une indentation
+    with open('faune_synthétisée.xml', 'r', encoding='utf-8') as file:
+        xml_string = file.read()
+    parsed_xml = minidom.parseString(xml_string)
+    pretty_xml_as_string = parsed_xml.toprettyxml(indent="  ")
+    with open('faune_synthétisée.xml', 'w', encoding='utf-8') as file:
+        file.write(pretty_xml_as_string)
     print("Nouveau fichier XML créé avec les informations synthétisées.")
 
 # Parcourir chaque espèce et synthétiser les informations
@@ -142,7 +120,7 @@ for espece_elem in root.findall('.//ficheBioInfo'):
         return found.text if found is not None else default
 
     info = {tag: get_text_or_default(espece_elem, tag) for tag in [
-        'Nom_français', 'Nom_scientifique', 'Grand_groupe', 'Sous_groupe', 'Espèce_à_statut',
+        'Nom_français', 'Nom_scientifique', 'Grand_groupe', 'Sous_groupe', 'Statut',
         'Description', 'Identification', 'Taille', 'Poids', 'Coloration', 'Distinction',
         'Répartition', 'Alimentation', 'Reproduction', 'Menaces_pour_l_espèce', 'Traits_caractéristiques',
         'Espèces_similaires', 'Habitat'
@@ -163,12 +141,12 @@ for espece_elem in root.findall('.//ficheBioInfo'):
     # Vérifier que les informations synthétisées ne sont pas vides
     if informations_synthétisées.strip():
         # Ajouter les informations synthétisées au nouvel arbre XML
-        espece_synth = ET.SubElement(root_synth, "espece")
-        ET.SubElement(espece_synth, "Nom_français").text = info['Nom_français']
-        ET.SubElement(espece_synth, "Grand_groupe").text = info['Grand_groupe']
-        ET.SubElement(espece_synth, "Sous_groupe").text = info['Sous_groupe']
-        ET.SubElement(espece_synth, "Espèce_à_statut").text = info['Espèce_à_statut']
-        ET.SubElement(espece_synth, "Description_synthétisée").text = informations_synthétisées
+        espece_synth = ET.SubElement(root_synth, "ESPECE")
+        ET.SubElement(espece_synth, "NOM_FRANÇAIS").text = info['Nom_français']
+        ET.SubElement(espece_synth, "GRAND_GROUPE").text = info['Grand_groupe']
+        ET.SubElement(espece_synth, "SOUS_GROUPE").text = info['Sous_groupe']
+        ET.SubElement(espece_synth, "STATUT").text = info['Statut']
+        ET.SubElement(espece_synth, "DESCRIPTION").text = informations_synthétisées
         print(f"Informations synthétisées ajoutées pour {info['Nom_français']}.")
         # Enregistrer le fichier XML après chaque ajout d'espèce
         enregistrer_xml()
